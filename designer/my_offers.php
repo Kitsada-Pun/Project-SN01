@@ -7,18 +7,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'designer') {
     exit();
 }
 
-require_once '../connect.php';
+require_once '../connect.php'; // ไฟล์นี้จะสร้างตัวแปร $conn
 
 $designer_id = $_SESSION['user_id'];
 $loggedInUserName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'Designer';
 
-// --- ดึงชื่อผู้ใช้ที่ล็อกอิน ---
+// --- [แก้ไข] ดึงชื่อผู้ใช้ที่ล็อกอินโดยใช้ $conn ---
 if (isset($_SESSION['user_id'])) {
     $loggedInUserName = $_SESSION['username'] ?? $_SESSION['full_name'] ?? '';
     if (empty($loggedInUserName)) {
         $user_id = $_SESSION['user_id'];
         $sql_user = "SELECT first_name, last_name FROM users WHERE user_id = ?";
-        $stmt_user = $condb->prepare($sql_user);
+        // --- [แก้ไข] เปลี่ยน $condb เป็น $conn ---
+        $stmt_user = $conn->prepare($sql_user); 
         if ($stmt_user) {
             $stmt_user->bind_param("i", $user_id);
             $stmt_user->execute();
